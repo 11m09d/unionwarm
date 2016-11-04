@@ -8,11 +8,12 @@ Unionwarm 是openfalcon中的Portal的Go版本，目前大的功能欠缺express
 ### 2. Restful接口介绍
 
 |序号 | 内容                                    | 输入   |  输出  | 作用 |
-|01  | --------                                | -----:  | :----:  | :----:  |
-|02  | /                                       | |       |
-|03  | /zjz_work_cmdb/cmdb/logout              |     |      |
-|04  | /zjz_work_cmdb/cmdb/falcontpl           |        |    |
-|05  | /zjz_work_cmdb/cmdb/falconnewtpl        |        |    |
+|--------|:--------:|--------:|--------:|--------:|
+|01  | /                                       | |       |
+|02  | /zjz_work_cmdb/cmdb/logout              |     |      |
+|03  | /zjz_work_cmdb/cmdb/falcontpl           |        |    |
+|04  | /zjz_work_cmdb/cmdb/falconnewtpl        |        |    |
+|05  |         |        |    | |
 |06  |         |        |    | |
 |07  |         |        |    | |
 |08  |         |        |    | |
