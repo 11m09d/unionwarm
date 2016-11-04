@@ -1,0 +1,45 @@
+appname = unionwarm
+httpport = 8082
+runmode = dev
+
+SessionOn = true
+
+# DataBase Settings
+db.host = "20.26.17.109"
+db.port = "3306"
+db.user = "root"
+db.password = ""
+db.name = "falcon_portal"
+db.timezone = "Asia/Shanghai"
+
+
+db1.host = "20.26.17.109"
+db1.port = "3306"
+db1.user = "root"
+db1.password = ""
+db1.name = "falcon_portal"
+
+
+
+db02.host = "20.26.17.109"
+db02.port = "3306"
+db02.user = "root"
+db02.password = ""
+db02.name = "falcon_portal"
+db02.timezone = "Asia/Shanghai"
+
+db03.host = "20.26.17.109"
+db03.port = "3306"
+db03.user = "root"
+db03.password = ""
+db03.name = "uic"
+db03.timezone = "Asia/Shanghai"
+
+
+EnableAdmin = false
+
+UicInternal="http://20.26.17.109:1234"
+#UicInternal="http://20.26.17.105:1234"
+
+#Redirect_url="/zjz_work_cmdb/cmdb/falcontpl"
+Redirect_url="/"
