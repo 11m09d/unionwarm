@@ -1,0 +1,20 @@
+            <!-- 左侧菜单 -->
+            <aside class="main-sidebar">
+                <section class="sidebar">
+                    <!-- 菜单 -->
+                    <ul class="sidebar-menu">
+            <li {{if eq .requestPath "/zjz_work_cmdb/cmdb/falconucintf"}}class="active"{{else}}class=""{{end}}><a href="/zjz_work_cmdb/cmdb/falconucintf"><i class="fa fa-dashboard"></i> <span>统一采集相关信息</span></a></li>
+
+             <li {{if eq .requestPath "/zjz_work_cmdb/cmdb/falconucintf_addhosts"}}class="active"{{else}}class=""{{end}}><a href="/zjz_work_cmdb/cmdb/falconucintf_addhosts"><i class="fa fa-dashboard"></i> <span>自动告警确认</span></a></li>
+            
+             
+             <li {{if eq .requestPath "/zjz_work_cmdb/cmdb/falcontpl"}}class="active"{{else}}class=""{{end}}><a href="/zjz_work_cmdb/cmdb/falcontpl"><i class="fa fa-dashboard"></i> <span>策略模版</span></a></li>
+             
+             <li {{if eq .requestPath "/zjz_work_cmdb/cmdb/falconhg"}}class="active"{{else}}class=""{{end}}><a href="/zjz_work_cmdb/cmdb/falconhg"><i class="fa fa-dashboard"></i> <span>监控组</span></a></li>
+             
+             <li {{if eq .requestPath "/zjz_work_cmdb/cmdb/falconagg"}}class="active"{{else}}class=""{{end}}><a href="/zjz_work_cmdb/cmdb/falconagg"><i class="fa fa-dashboard"></i> <span>自定义集群监控</span></a></li>
+                   
+                    </ul>
+                </section>
+            </aside>
+            <!-- 左侧菜单 结束 -->

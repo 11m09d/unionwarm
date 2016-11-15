@@ -1,0 +1,143 @@
+{{template "base/base_falcon.html" .}}
+{{define "head"}}
+        <title>告警策略配置平台</title>
+        <meta charset="utf-8">
+   
+   
+
+{{end}}
+
+{{define "content"}}
+
+	<div class="content-wrapper">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="c-panel panelMark c-panel-pageOne mb30">
+                    
+                    <div class="c-panel-header headerMark">
+                        <span id="stepMark">创建监控组</span>
+                    </div>
+                    
+                    
+                    <div class="king-block">
+                        <div class="king-block-content">
+                            
+                            <div class="form-horizontal mt20 pb15" style="width:600px;">
+                                
+                                
+                                <div class="form-group">
+                                    <label for="" class="col-sm-3 control-label">监控组名称: </label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="Grp_name" maxlength="32" placeholder="输入监控组名称，必填">
+                                    </div>
+
+                                    <div class="col-sm-2 pl0 pt10">
+                                        <span class="c-gridinputmust">*</span>
+                                    </div>
+                                </div>
+
+
+
+                                <div class="text-center">
+                                         <button class="btn btn-primary">保存</button>
+                                         <button class="btn btn-default cancelb">取消</button>
+                                         
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                
+                </div>
+            </div>
+        </div>
+    </div>
+     
+<input type="hidden" id="username" value={{.user}}>
+
+<script>
+$(document).ready(function() {
+    $(".cancelb").click(function(){
+        reloadPage();
+    })
+
+    $(".btn-primary").click(function () {
+        var GroupName = $.trim($("#Grp_name").val());
+        var Username = $.trim($("#username").val());
+        if ((GroupName.length > 35) || (GroupName.length == 0)) {
+            var diaCopyMsg = dialog({
+                quickClose: true,
+                align: 'left',
+                padding:'5px 5px 5px 10px',
+                skin: 'c-Popuplayer-remind-left',
+                content: '<span style="color:#fff">请输入监控组名称并限制在35位字符</span>'
+            });
+            diaCopyMsg.show($("#Grp_name").get(0));
+            return;
+
+        }
+        $.post("/zjz_work_cmdb/cmdb/falconaddgrp",
+            {
+                Grp_name: GroupName,
+                Create_user: Username
+            }
+            , function (result) {
+                rere = result;
+                console.log(rere)
+                if (rere.success == false) {
+                    showWindows(rere.errInfo, 'notice');
+                }
+                else {
+                    showWindows('新增成功！', 'success');
+                        setTimeout(function () {
+                            window.location.href = '/zjz_work_cmdb/cmdb/falconhg';
+                        }, 1000);
+                }
+            })
+
+    });
+
+    function showWindows(Msg, level) {
+        if (level == 'success') {
+
+            var d = dialog({
+                width: 150,
+                content: '<div class="c-dialogdiv2"><i class="c-dialogimg-success"></i>'+Msg+'</div>'
+            });
+            d.show();
+        }
+        else if (level == 'error') {
+            var d = dialog({
+                title: '错误',
+                width: 300,
+                okValue: "确定",
+                ok: function () {
+                },
+                content: '<div class="c-dialogdiv2"><i class="c-dialogimg-failure"></i>' + Msg + '</div>'
+            });
+            d.showModal();
+        }
+        else {
+            var d = dialog({
+                title: '警告',
+                width: 300,
+                okValue: "确定",
+                ok: function () {
+                },
+                content: '<div class="c-dialogdiv2"><i class="c-dialogimg-prompt"></i>' + Msg + '</div>'
+            });
+            d.showModal();
+        }
+    }
+
+
+
+});
+
+function reloadPage()
+  {
+  window.location.reload()
+  }
+</script>
+
+{{end}}

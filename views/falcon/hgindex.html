@@ -1,0 +1,816 @@
+{{template "base/base_falcon.html" .}}
+{{define "head"}}
+        <title>告警策略配置平台</title>
+        <meta charset="utf-8">
+         <!--<link href="/zjz_work_cmdb/static/tkbl/css/bootstrap.min.css?v=3.4.0" rel="stylesheet">-->
+    <link href="/zjz_work_cmdb/static/tkbl/font-awesome/css/font-awesome.css?v=4.3.0" rel="stylesheet">
+
+    <!-- Data Tables -->
+    <link href="/zjz_work_cmdb/static/tkbl/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+
+    <link href="/zjz_work_cmdb/static/tkbl/css/animate.css" rel="stylesheet">
+    <link href="/zjz_work_cmdb/static/tkbl/css/style.css?v=2.2.0" rel="stylesheet">
+
+    <link rel="stylesheet" href="/zjz_work_cmdb/static/tkbl/select2/select2.css" >
+    <link rel="stylesheet" href="/zjz_work_cmdb/static/tkbl/select2/select2-bootstrap.css">
+    <script src="/zjz_work_cmdb/static/tkbl/select2/select2.min.js"></script>
+   
+
+{{end}}
+
+{{define "content"}}
+
+
+<!--<link href="/zjz_work_cmdb/static/assets/select2-3.5.2/select2.css" rel="stylesheet">-->
+
+   
+
+<style>
+    td{position: relative;}
+    .copy-btn{position: absolute;top: 13px;right: 8px;visibility: hidden;z-index: 8888;}
+    td:hover .copy-btn,.copy-btn.hover{display:inline;visibility: visible;}
+</style>
+
+	<div class="content-wrapper">
+        <section class="content-header">
+        <h1>监控组</h1>
+                <a id="newfalcontpl" class="btn btn-success" href="/zjz_work_cmdb/cmdb/falconnewgrp" style="position:absolute;right:20px;top:20px;"><span class="fa fa-plus pr10"></span>新增监控组</a>
+        <br>
+         </section>
+
+
+
+          <div class="ibox-content">
+
+                                <table class="table table-striped table-bordered table-hover dataTables-example">
+                                   
+                                    <thead>
+                                        <tr>
+                                            <th>监控组名称</th>
+                                            <th>创建者</th>
+                                            <th>当前设备数</th>
+                                            <th>添加监控设备</th>
+                                            <th>当前关联模版</th>
+                                            <th>关联模版</th>
+                                            <!--<th>监控组名称修改</th>-->
+                                            <th>删除</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                        
+                            {{range $index, $elem := .falcongroups}}
+                                 
+                    <tr>
+                        <td><div class="grp_name" title="ddgrpname">{{$elem.Grp_name}}</div>
+                        	<input type="hidden" class="Id" value="{{$elem.Id}}">
+                            <input type="hidden" class="Grpname" value="{{$elem.Grp_name}}">
+                        </td>
+
+                        <td><div class="create_user" title="ddcreateuser">{{$elem.Create_user}}</div>
+                            <input type="hidden" class="Createuser" value="{{$elem.Create_user}}">
+                        </td>
+
+                        <td> <div class="cnt" title="ddcnt">{{$elem.Id | idhostcnt}}</div>
+                        </td>
+
+                        <td style="text-align: center;" role="gridcell">
+                            <a name="edits" class="btn btn-success  btn-sm falcongrp-bindhost" >设置</a>
+                        </td>   
+
+                        <td><div class="" title="ddtplname">
+                            {{range $index1,$elem1 := $.falcongrptpl}}
+                                {{if eq $elem1.Grp_id $elem.Id}}   
+                                    {{range $index2, $elem2 := $.falcontpls}}
+                                        {{if eq $elem1.Tpl_id $elem2.Id}}
+                                            {{$elem2.Tpl_name}}
+                                        {{end}}
+                                    {{end}}
+                                {{end}}
+                            {{end}}
+                            </div>
+                            <input type="hidden" class="tplname" value="tplname">
+                        </td>
+
+
+
+                        <td style="text-align: center;" role="gridcell">
+                            <a name="edits" class="btn btn-success  btn-sm falcongrp-bindtpl" >设置</a>
+                        </td>
+
+                        <!--
+                        <td style="text-align: center;" role="gridcell">
+                            <a name="edits" class="btn btn-success  btn-sm falcongrp-edit" >编辑</a>
+                        </td>
+                    -->
+
+                        <td style="text-align: center;" role="gridcell">
+                        	<a name="edits" class="btn btn-success  btn-sm falcongrp-delete" >删除</a>
+                        </td>
+                       
+                   </tr> 
+                 
+                    {{end}}
+                
+                                      </tbody>
+                                    </table>
+                 </div>
+
+<div class="row">
+<div class="col-xs-12" id="update"></div>
+</div>
+
+
+<div class="row">
+<div class="col-xs-12" id="update_tpl"></div>
+</div>
+
+ <!--<input type="hidden" id="current_sid">-->
+<input type="hidden" id="grp_id">
+
+
+<div id="addhosts_div" style="display: none;">
+        <div class="mt20 mb20">
+            <div class="pull-left">
+                <textarea class="form-control" rows="17" id="hosts" placeholder="监控项名称，一个监控项一行"
+                          style="width: 600px;"></textarea>
+            </div>
+            <div class="pull-left" style="padding-left: 20px;" id="message">
+
+            </div>
+            <div style="clear: both;"></div>
+        </div>
+
+        <button class="btn btn-default" onclick="add_hosts();">
+            <span class="glyphicon glyphicon-plus"></span>
+             增加监控项
+        </button>
+        <button class="btn btn-default" onclick="history.go(-1);">
+            <span class="glyphicon glyphicon-arrow-left"></span>
+            返回
+        </button>
+</div>
+ 
+
+<div class="row">
+<div class="col-xs-12" id="bind_tpl">
+</div>
+</div>
+
+
+<div id="bindtpl_div"  style="display: none;" class="form-inline mb20" role="form">
+<div class="form-group">
+<!--<input type="text" style="width: 400px;" placeholder="input template name" class="form-control" id="tpl_id">-->
+          
+<select id="tpl_id1"  style="width: 400px;" class="form-control">
+{{range $index, $elem := .falcontpls}}
+<option value={{$elem.Id}}>{{$elem.Tpl_name}}</option>
+{{end}}
+
+</select>
+</div>
+<div class="form-group">
+<button type="button" onclick="bind_template(1);" class="btn btn-default">
+<span class="glyphicon glyphicon-plus"></span>Bind</button>
+<button type="button" onclick="history.go(-1);" class="btn btn-default">
+<span class="glyphicon glyphicon-arrow-left"></span>Back</button>
+</div>
+</div>
+          
+
+
+<!--
+<div class="form-group">
+<select id="tpl_id1"  style="width: 400px;" class="form-control"></select>
+</div>
+-->
+
+<script>
+$("#tpl_id1").select2({
+    });
+</script>
+
+
+
+
+</div>
+
+<!-- Mainly scripts -->
+    <script src="/zjz_work_cmdb/static/js/falcon.js"></script>
+   
+<!--<script src="/zjz_work_cmdb/static/assets/kendoui-2015.2.624/js/kendo.web.min.js"></script>-->
+
+<!--<script src="/zjz_work_cmdb/static/assets/select2-3.5.2/select2.js"></script>-->
+<script src="/zjz_work_cmdb/static/assets/intro/intro.js?version={{.today}}"></script>
+<script src="/zjz_work_cmdb/static/assets/jquery.zeroclipboard/jquery.zeroclipboard.min.js"></script>
+ 
+    <script src="/zjz_work_cmdb/static/tkbl/js/jquery-2.1.1.min.js"></script>
+    <script src="/zjz_work_cmdb/static/tkbl/js/bootstrap.min.js?v=3.4.0"></script>
+    <script src="/zjz_work_cmdb/static/tkbl/laydate/laydate.js"></script>
+
+    
+    <!--
+    <script src="/zjz_work_cmdb/static/tkbl/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+    <script src="/zjz_work_cmdb/static/tkbl/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+    
+    <script src="/zjz_work_cmdb/static/tkbl/js/plugins/jeditable/jquery.jeditable.js"></script>
+    -->
+
+    <!-- Data Tables -->
+    <script src="/zjz_work_cmdb/static/tkbl/js/plugins/dataTables/jquery.dataTables.js"></script>
+    <script src="/zjz_work_cmdb/static/tkbl/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+
+    <!-- Custom and plugin javascript -->
+    <!-- <script src="/zjz_work_cmdb/static/tkbl/js/hplus.js?v=2.2.0"></script>-->
+    
+    <!--<script src="/zjz_work_cmdb/static/tkbl/js/plugins/pace/pace.min.js"></script>-->
+
+    <!-- Page-Level Scripts -->
+    <script src="/zjz_work_cmdb/static/js/common.js?version={{.today}}"></script>
+ 
+    <script>
+        $(document).ready(function () {
+            $('.dataTables-example').dataTable();
+
+            
+        
+
+
+        });
+
+        function timeConverter(UNIX_timestamp){
+                  if (UNIX_timestamp==0) {
+                        return 0
+                }
+                var date = new Date(UNIX_timestamp * 1000);
+                Y = date.getFullYear() + '-';
+                M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+                D = date.getDate() + ' ';
+                h = date.getHours() + ':';
+                m = date.getMinutes() + ':';
+                s = date.getSeconds();
+                time=Y+M+D+h+m+s
+                
+
+                return time
+
+                
+        }
+
+        function goto_hosts_add_div() {
+            /*
+             $("#metric").val('');
+             $("#tags").val('');
+             $("#max_step").val('3');
+             $("#priority").val('0');
+             $("#note").val('');
+             $("#func").val('all(#3)');
+             $("#op").val('==');
+             $("#right_value").val('0');
+             $("#run_begin").val('');
+             $("#run_end").val('');
+             */
+             $("#hosts").val('');
+             $("#addhosts_div").show('fast');
+            //$("#current_sid").val('');
+            //location.href = "#add";
+        }
+
+             
+      
+
+        function goto_tpls_add_div(gid) {
+            $("#bindtpl_div").show('fast');
+             /*
+             var Gid = gid 
+             //$("#hosts").val('');
+             //$("#addhosts_div").show('fast');
+
+             var output = '<div id="bindtpl_div" class="form-inline mb20" role="form">'
+             output +='<div class="form-group">'
+             output +='<input type="text" style="width: 400px;" placeholder="input template name" class="form-control" id="tpl_id">'
+             output +='<select id="tpl_id"  style="width: 400px;" class="form-control"></select>'
+             output +='</div>'
+
+             output +='<div class="form-group">'
+             output +='<button type="button" onclick="bind_template('+Gid+');" class="btn btn-default">'
+             output +='<span class="glyphicon glyphicon-plus"></span>Bind</button>'
+
+             output +='<button type="button" onclick="history.go(-1);" class="btn btn-default">'
+             output +='<span class="glyphicon glyphicon-arrow-left"></span>Back</button>'
+
+             output +='</div>'
+
+             
+             output += '</div>'
+
+              $('#bind_tpl').html(output);
+            */
+        }
+
+
+        function bind_template(hid) {
+                var tpl_id = $.trim($("#tpl_id1").val());
+                var grp_id = $.trim($("#grp_id").val());
+                console.log(grp_id);
+                console.log(tpl_id);
+                 $.post('/zjz_work_cmdb/cmdb/falconbindgrptpl', {
+                    'tpl_id': tpl_id,
+                    'grp_id':grp_id,
+                }, function (result) {
+                        console.log(result)
+                        rere = result;
+                        if(rere.success == false)
+                        {
+                            showWindows(rere.errInfo,'notice');
+                            return;
+                        }else
+                        {
+                            showWindows("绑定成功！",'success');
+                            setTimeout(function(){window.location.reload();},1000);
+                            return;
+                        }
+
+            })    
+        }
+
+
+        function grp_deltpls(hid) {
+
+            
+            var grp_id = $.trim($("#grp_id").val());
+            var Id = hid 
+            
+            var gridBatDel = dialog({
+            title:'确认',
+            width:250,
+            content: '是否取消绑定模版',
+            okValue:"确定",
+            cancelValue:"取消",
+            ok:function (){
+                
+                $.post("/zjz_work_cmdb/cmdb/falcongrptpldel",
+                    {Grp_id:grp_id,Tpl_id:Id}
+                    ,function(result) {
+                        // rere = $.parseJSON(result);
+                        rere = result;
+                        if(rere.success == false)
+                        {
+                            showWindows(rere.errInfo,'notice');
+                            return;
+                        }
+                        else
+                        {
+                            showWindows("取消绑定成功！",'success');
+                            setTimeout(function(){window.location.reload();},1000);
+                            return;
+                        }
+                    });
+                
+                
+
+            },
+            cancel: function () {
+            }
+        });
+        gridBatDel.showModal();
+        
+        }
+
+        function hg_delhosts(hid) {
+
+            
+            var grp_id = $.trim($("#grp_id").val());
+            var Id = hid 
+            
+            var gridBatDel = dialog({
+            title:'确认',
+            width:250,
+            content: '是否删除选中监控项',
+            okValue:"确定",
+            cancelValue:"取消",
+            ok:function (){
+                
+                $.post("/zjz_work_cmdb/cmdb/falconhgdel",
+                    {Grp_id:grp_id,Id:Id}
+                    ,function(result) {
+                        // rere = $.parseJSON(result);
+                        rere = result;
+                        if(rere.success == false)
+                        {
+                            showWindows(rere.errInfo,'notice');
+                            return;
+                        }
+                        else
+                        {
+                            //showWindows("删除成功！",'success');
+                            //cq1115
+
+                           $("#addhosts_div").hide('fast');
+                           
+                           // showWindows("增加成功！",'success');
+                           $.ajax({
+                                url : '/zjz_work_cmdb/cmdb/falcongphost',
+                                method : 'post',
+                                data: {Id:grp_id},
+                                success : function(response){
+                                    //console.log(response)
+
+                                    var output =  '<div class="panel panel-default" >';
+                                    output += '<div class="panel-heading">该监控组的监控设备</div>';
+                                    output += '<div class="panel-body">';
+                                    output += '<div class="pull-right">';
+                                    output += '<a class="btn btn-default" href="javascript:goto_hosts_add_div();">';
+                                    output += '<span class="glyphicon glyphicon-plus"></span></a>';
+                                    output += '</div>';
+                                    output += '<div style="line-height: 35px;">';
+                                    output += '监控设备列表';
+                                    output += '</div></div>'
+               
+            
+                                    output += '<table class="table table-hover table-bordered table-striped" style="margin-bottom: 0px;">';
+                    
+            
+                                    output += '<thead>';
+                                    output += '<tr>';
+                                    output += '<th>监控设备名称</th>';
+                                    output += '<th>维护起始时间</th>';
+                                    output += '<th>维护结束时间</th>';
+                                    output += '<th>关联监控组信息</th>';
+                                    output += '<th>关联模版信息</th>';
+                                    output += '<th>删除监控项</th>';
+                                    output += '<th>设置维护时间</th>';
+                     
+                                    output += '</tr>';
+                                    output += '</thead>';
+                     
+                     
+                            if(response.data==null) {
+                                    console.log(response.data)
+                        
+                            } else {
+                                for (var i = 0; i < response.data.length; i ++ ) {
+
+                                    var date = new Date(response.data[i][0].Maintain_begin * 1000);
+                                    Y = date.getFullYear() + '-';
+                                    M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+                                    D = date.getDate() + ' ';
+                                    h = date.getHours() + ':';
+                                    m = date.getMinutes() + ':';
+                                    s = date.getSeconds();
+                
+                
+
+
+                                    output += '<tbody>';
+                                    output += '<tr>';
+                                    output += '<td>';
+                                    output += '<div class="hostname" title="dd_hostname">'+response.data[i][0].Hostname+'</div>'
+                                    output += '<input type="hidden" class="Id" value="'+response.data[i][0].Id+'">'
+                                    output += '</td>';
+                                    output += '<td>';
+                                    output += '<div class="begin_maintain" title="dd_begin_maintain">'+timeConverter(response.data[i][0].Maintain_begin)+'</div>'
+                                    output += '</td>';
+                                    output += '<td>';
+                                    output += '<div class="end_maintain" title="dd_end_maintain">'+timeConverter(response.data[i][0].Maintain_end)+'</div>'
+                                    output += '</td>';
+                                    output += '<td>';
+                                    output += '<a name="bindgroup" class="btn btn-success  btn-sm falconhg-bindgroup" >'+"设置"+'</a>';
+                                    output += '</td>';
+                                    output += '<td>';
+                                    output += '<a name="bindtemplate" class="btn btn-success  btn-sm falconhg-bindtemplate" >'+"设置"+'</a>'; 
+                                    output += '</td>';
+                                    output += '<td>';
+                                    output += '<a name="delhosts" class="btn btn-success  btn-sm falconhg-delhosts" href="javascript:hg_delhosts(\''+response.data[i][0].Id+'\');" >'+"删除"+'</a>'; 
+                                    output += '</td>';
+                                    output += '<td>';
+
+                                    output += '<div>'
+                                    output += '<input onclick="laydate({istime: true, format: \'YYYY-MM-DD hh:mm\'})" placeholder="begin" id="begin">'
+                        
+                                    output += '<input onclick="laydate({istime: true, format: \'YYYY-MM-DD hh:mm\'})" placeholder="end" id="end">'
+                        
+                       
+                                    output += '<button class="btn btn-success btn-sm" onclick="host_maintain('+response.data[i][0].Id+')">维护</button>';
+                        
+
+                       
+                                    output += '<button class="btn btn-success btn-sm" onclick="no_host_maintain('+response.data[i][0].Id+')">取消维护</button>';
+                                    output += '</div>';
+
+                                    output += '</td>';
+                        
+                                    output += '</tr>';
+                                    output += '</tbody>';
+                                    }
+                     
+                                }
+                      
+
+                                    output += '</table>';
+                                    output += '</div>';
+                                    $('#update').html(output);
+        
+                                }
+                            })
+
+                            //setTimeout(function(){window.location.reload();},1000);
+                            //return;
+                        }
+                    });
+                
+                
+
+            },
+            cancel: function () {
+            }
+        });
+        gridBatDel.showModal();
+        
+        }
+
+       
+
+        
+        
+        function add_hosts() {
+             //var sid = $("#current_sid").val();
+             var hosts = $.trim($("#hosts").val());
+             var grp_id = $.trim($("#grp_id").val());
+             
+             if (hosts.length == 0) {
+                    var d = dialog({
+                        title:'警告',
+                        width:300,
+                        okValue:"确定",
+                        ok:function(){},
+                        content: '<div class="c-dialogdiv2"><i class="c-dialogimg-prompt"></i>'+"请填写监控项列表，一行一个"+'</div>'
+                });
+                    d.showModal();
+                    return false;
+            }
+            
+            
+            
+            $.post('/zjz_work_cmdb/cmdb/falconaddhosts', {
+                //'sid': sid,
+                'hosts': hosts,
+                'grp_id':grp_id,
+            }, function (result) {
+                console.log(result)
+                rere = result;
+                if(rere.success == false)
+                {
+                            showWindows(rere.errInfo,'notice');
+                            return;
+                }
+
+                else
+                {
+
+                           
+
+                           $("#addhosts_div").hide('fast');
+                           
+                           // showWindows("增加成功！",'success');
+                           $.ajax({
+                                url : '/zjz_work_cmdb/cmdb/falcongphost',
+                                method : 'post',
+                                data: {Id:grp_id},
+                                success : function(response){
+                                    console.log(response)
+
+                                    var output =  '<div class="panel panel-default" >';
+                                    output += '<div class="panel-heading">该监控组的监控设备</div>';
+                                    output += '<div class="panel-body">';
+                                    output += '<div class="pull-right">';
+                                    output += '<a class="btn btn-default" href="javascript:goto_hosts_add_div();">';
+                                    output += '<span class="glyphicon glyphicon-plus"></span></a>';
+                                    output += '</div>';
+                                    output += '<div style="line-height: 35px;">';
+                                    output += '监控设备列表';
+                                    output += '</div></div>'
+               
+            
+                                    output += '<table class="table table-hover table-bordered table-striped" style="margin-bottom: 0px;">';
+                    
+            
+                                    output += '<thead>';
+                                    output += '<tr>';
+                                    output += '<th>监控设备名称</th>';
+                                    output += '<th>维护起始时间</th>';
+                                    output += '<th>维护结束时间</th>';
+                                    output += '<th>关联监控组信息</th>';
+                                    output += '<th>关联模版信息</th>';
+                                    output += '<th>删除监控项</th>';
+                                    output += '<th>设置维护时间</th>';
+                     
+                                    output += '</tr>';
+                                    output += '</thead>';
+                     
+                     
+                            if(response.data==null) {
+                                    console.log(response.data)
+                        
+                            } else {
+                                for (var i = 0; i < response.data.length; i ++ ) {
+
+                                    var date = new Date(response.data[i][0].Maintain_begin * 1000);
+                                    Y = date.getFullYear() + '-';
+                                    M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+                                    D = date.getDate() + ' ';
+                                    h = date.getHours() + ':';
+                                    m = date.getMinutes() + ':';
+                                    s = date.getSeconds();
+                
+                
+
+
+                                    output += '<tbody>';
+                                    output += '<tr>';
+                                    output += '<td>';
+                                    output += '<div class="hostname" title="dd_hostname">'+response.data[i][0].Hostname+'</div>'
+                                    output += '<input type="hidden" class="Id" value="'+response.data[i][0].Id+'">'
+                                    output += '</td>';
+                                    output += '<td>';
+                                    output += '<div class="begin_maintain" title="dd_begin_maintain">'+timeConverter(response.data[i][0].Maintain_begin)+'</div>'
+                                    output += '</td>';
+                                    output += '<td>';
+                                    output += '<div class="end_maintain" title="dd_end_maintain">'+timeConverter(response.data[i][0].Maintain_end)+'</div>'
+                                    output += '</td>';
+                                    output += '<td>';
+                                    output += '<a name="bindgroup" class="btn btn-success  btn-sm falconhg-bindgroup" >'+"设置"+'</a>';
+                                    output += '</td>';
+                                    output += '<td>';
+                                    output += '<a name="bindtemplate" class="btn btn-success  btn-sm falconhg-bindtemplate" >'+"设置"+'</a>'; 
+                                    output += '</td>';
+                                    output += '<td>';
+                                    output += '<a name="delhosts" class="btn btn-success  btn-sm falconhg-delhosts" href="javascript:hg_delhosts(\''+response.data[i][0].Id+'\');" >'+"删除"+'</a>'; 
+                                    output += '</td>';
+                                    output += '<td>';
+
+                                    output += '<div>'
+                                    output += '<input onclick="laydate({istime: true, format: \'YYYY-MM-DD hh:mm\'})" placeholder="begin" id="begin">'
+                        
+                                    output += '<input onclick="laydate({istime: true, format: \'YYYY-MM-DD hh:mm\'})" placeholder="end" id="end">'
+                        
+                       
+                                    output += '<button class="btn btn-success btn-sm" onclick="host_maintain('+response.data[i][0].Id+')">维护</button>';
+                        
+
+                       
+                                    output += '<button class="btn btn-success btn-sm" onclick="no_host_maintain('+response.data[i][0].Id+')">取消维护</button>';
+                                    output += '</div>';
+
+                                    output += '</td>';
+                        
+                                    output += '</tr>';
+                                    output += '</tbody>';
+                                    }
+                     
+                                }
+                      
+
+                                    output += '</table>';
+                                    output += '</div>';
+                                    $('#update').html(output);
+        
+                                }
+                            })
+                       }
+
+                            
+
+
+            })
+
+        }
+
+
+    function host_maintain(hid) {
+            var Id = hid
+            var host_begin = $.trim($("#host_begin").val())
+            var host_end = $.trim($("#host_end").val())
+            var grp_id = $.trim($("#grp_id").val());
+
+
+            if (host_begin.length == 0) {
+                    var d = dialog({
+                        title:'警告',
+                        width:300,
+                        okValue:"确定",
+                        ok:function(){},
+                        content: '<div class="c-dialogdiv2"><i class="c-dialogimg-prompt"></i>'+"请选取正确维护开始时间"+'</div>'
+                });
+                    d.showModal();
+                    return false;
+            }
+
+            if (host_end.length == 0) {
+                    var d = dialog({
+                        title:'警告',
+                        width:300,
+                        okValue:"确定",
+                        ok:function(){},
+                        content: '<div class="c-dialogdiv2"><i class="c-dialogimg-prompt"></i>'+"请选取正确维护结束时间"+'</div>'
+                });
+                    d.showModal();
+                    return false;
+            }
+            console.log(Id,host_begin,host_end)
+            
+            $.post('/zjz_work_cmdb/cmdb/falconhostmaintain', {
+                'Id': Id,
+                'host_begin': host_begin,
+                'host_end': host_end,
+                'grp_id': grp_id
+            }, function (result) {
+                console.log(result)
+            })
+
+            $("#host_begin").val('');
+            $("#host_end").val('');
+             //var sid = $("#current_sid").val();
+            /* 
+            $.post('/zjz_work_cmdb/cmdb/falconaddstrategy', {
+                //'sid': sid,
+                'metric': $.trim($("#metric").val()),
+                'tags': $.trim($("#tags").val()),
+                'max_step': $.trim($("#max_step").val()),
+                'priority': $.trim($("#priority").val()),
+                'note': $.trim($("#note").val()),
+                'func': $.trim($("#func").val()),
+                'op': $.trim($("#op").val()),
+                'right_value': $.trim($("#right_value").val()),
+                'run_begin': $.trim($("#run_begin").val()),
+                'run_end': $.trim($("#run_end").val()),
+                'tpl_id': $.trim($("#tpl_id").val())
+            }, function (result) {
+                console.log(result)
+            */
+    }
+
+
+    function no_host_maintain(hid) {
+            var Id = hid
+            var grp_id = $.trim($("#grp_id").val());
+            var host_begin = "1970-01-01 00:00"
+            var host_end = "1970-01-01 00:00"
+           
+            $.post('/zjz_work_cmdb/cmdb/falconhostmaintain', {
+                'Id': Id,
+                'host_begin': host_begin,
+                'host_end': host_end,
+                'grp_id': grp_id
+            }, function (result) {
+                console.log(result)
+            })
+
+            $("#host_begin").val('');
+            $("#host_end").val('');
+           
+
+      
+    }
+
+       
+    function showWindows(Msg,level)
+    {
+    if(level=='success')
+    {
+        var d = dialog({
+            width: 150,
+            content: '<div class="c-dialogdiv2"><i class="c-dialogimg-success"></i>'+Msg+'</div>'
+        });
+        d.show();
+    }
+    else if(level =='error')
+    {
+        var d = dialog({
+            title:'错误',
+            width:300,
+            okValue:"确定",
+            ok:function(){},
+            content: '<div class="c-dialogdiv2"><i class="c-dialogimg-failure"></i>'+Msg+'</div>'
+        });
+        d.showModal();
+    }
+    else
+    {
+        var d = dialog({
+            title:'警告',
+            width:300,
+            okValue:"确定",
+            ok:function(){},
+            content: '<div class="c-dialogdiv2"><i class="c-dialogimg-prompt"></i>'+Msg+'</div>'
+        });
+        d.showModal();
+    }
+    }
+    
+
+
+
+  </script>
+
+
+{{end}}

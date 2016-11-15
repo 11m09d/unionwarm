@@ -1,0 +1,172 @@
+{{template "base/base_falcon.html" .}}
+{{define "head"}}
+        <title>告警策略配置平台</title>
+        <meta charset="utf-8">
+    <link href="/zjz_work_cmdb/static/tkbl/font-awesome/css/font-awesome.css?v=4.3.0" rel="stylesheet">
+
+    <!-- Data Tables -->
+    <link href="/zjz_work_cmdb/static/tkbl/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+
+    <link href="/zjz_work_cmdb/static/tkbl/css/animate.css" rel="stylesheet">
+    <link href="/zjz_work_cmdb/static/tkbl/css/style.css?v=2.2.0" rel="stylesheet">
+
+    <link rel="stylesheet" href="/zjz_work_cmdb/static/tkbl/select2/select2.css" >
+    <link rel="stylesheet" href="/zjz_work_cmdb/static/tkbl/select2/select2-bootstrap.css">
+    <script src="/zjz_work_cmdb/static/tkbl/select2/select2.min.js"></script>
+   
+   
+
+{{end}}
+
+{{define "content"}}
+    <div class="content-wrapper">
+    <div class="panel panel-default">
+            <div class="panel-heading">
+                创建集群监控项
+            </div>
+
+            <div class="panel-body">
+
+                <div role="form">
+                    <div class="form-group">
+                        <label for="numerator">分子：</label>
+                        <textarea rows="4" id="numerator" class="form-control"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="denominator">分母：</label>
+                        <textarea rows="4" id="denominator" class="form-control"></textarea>
+                    </div>
+                    <div style="border-left: 10px solid green; padding-left: 5px;margin-bottom: 10px;">
+                        <span>计算得出的监控值要重新push回Falcon，需填写以下信息：</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="endpoint">endpoint:</label>
+                        <input type="text" class="form-control" id="endpoint">
+                    </div>
+                    <div class="form-group">
+                        <label for="metric">metric:</label>
+                        <input type="text" class="form-control" id="metric">
+                    </div>
+                    <div class="form-group">
+                        <label for="tags">tags:</label>
+                        <input type="text" class="form-control" id="tags">
+                    </div>
+                    <!--
+                    <div class="form-group">
+                        <label for="step" >汇报周期（秒为单位）:</label>
+                        <input type="text" class="form-control" id="step" value="60">
+                    </div>
+                -->
+                    <div class="form-group">
+                        <label for="grp_id">关联监控组</label>
+                    <select id="grp_id1"  style="width: 400px;" class="form-control">
+						{{range $index, $elem := .falcongroups}}
+						<option value={{$elem.Id}}>{{$elem.Grp_name}}</option>
+						{{end}}
+                    </select>
+					</div>
+                   
+                    <button class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk"></span>新建</button>
+                    
+                </div>
+
+
+            </div>
+        </div>
+    
+    </div>   
+    <script>
+$("#grp_id1").select2({
+    });
+</script>
+<!-- Mainly scripts -->
+    <script src="/zjz_work_cmdb/static/js/falcon.js"></script>
+   
+<script src="/zjz_work_cmdb/static/assets/intro/intro.js?version={{.today}}"></script>
+<script src="/zjz_work_cmdb/static/assets/jquery.zeroclipboard/jquery.zeroclipboard.min.js"></script>
+ 
+    <script src="/zjz_work_cmdb/static/tkbl/js/jquery-2.1.1.min.js"></script>
+    <script src="/zjz_work_cmdb/static/tkbl/js/bootstrap.min.js?v=3.4.0"></script>
+    <script src="/zjz_work_cmdb/static/tkbl/laydate/laydate.js"></script>
+
+    <script src="/zjz_work_cmdb/static/tkbl/js/plugins/dataTables/jquery.dataTables.js"></script>
+    <script src="/zjz_work_cmdb/static/tkbl/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+
+    <script src="/zjz_work_cmdb/static/js/common.js?version={{.today}}"></script>
+
+<script>
+$(document).ready(function() {
+ $(".btn-primary").click(function () {
+        var Numerator = $.trim($("#numerator").val());
+        var Denominator = $.trim($("#denominator").val());
+        var Endpoint = $.trim($("#endpoint").val());
+        var Metric = $.trim($("#metric").val());
+        var Tags = $.trim($("#tags").val());
+        var Grp_id1 = $.trim($("#grp_id1").val());
+
+        $.post("/zjz_work_cmdb/cmdb/falconaddcls",
+            {
+                Numerator: Numerator,
+                Denominator: Denominator,
+                Endpoint: Endpoint,
+                Metric: Metric,
+                Tags: Tags,
+                Grp_id: Grp_id1
+            }
+            , function (result) {
+                rere = result;
+                console.log(rere)
+
+                if (rere.success == false) {
+                    showWindows(rere.errInfo, 'notice');
+                }
+                else {
+                    showWindows('新增成功！', 'success');
+                        setTimeout(function () {
+                            window.location.href = '/zjz_work_cmdb/cmdb/falconagg';
+                        }, 1000);
+                }
+                
+            })
+
+    });
+
+    function showWindows(Msg, level) {
+        if (level == 'success') {
+
+            var d = dialog({
+                width: 150,
+                content: '<div class="c-dialogdiv2"><i class="c-dialogimg-success"></i>'+Msg+'</div>'
+            });
+            d.show();
+        }
+        else if (level == 'error') {
+            var d = dialog({
+                title: '错误',
+                width: 300,
+                okValue: "确定",
+                ok: function () {
+                },
+                content: '<div class="c-dialogdiv2"><i class="c-dialogimg-failure"></i>' + Msg + '</div>'
+            });
+            d.showModal();
+        }
+        else {
+            var d = dialog({
+                title: '警告',
+                width: 300,
+                okValue: "确定",
+                ok: function () {
+                },
+                content: '<div class="c-dialogdiv2"><i class="c-dialogimg-prompt"></i>' + Msg + '</div>'
+            });
+            d.showModal();
+        }
+    }
+
+
+
+});
+</script>
+
+{{end}}

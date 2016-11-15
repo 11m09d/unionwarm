@@ -1,0 +1,696 @@
+{{template "base/base_falcon.html" .}}
+{{define "head"}}
+        <title>告警策略配置平台</title>
+        <meta charset="utf-8">
+    <!--<link href="/zjz_work_cmdb/static/tkbl/css/bootstrap.min.css?v=3.4.0" rel="stylesheet">-->
+    <link href="/zjz_work_cmdb/static/tkbl/font-awesome/css/font-awesome.css?v=4.3.0" rel="stylesheet">
+
+    <!-- Data Tables -->
+    <link href="/zjz_work_cmdb/static/tkbl/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+
+
+    <link href="/zjz_work_cmdb/static/tkbl/css/animate.css" rel="stylesheet">
+    <link href="/zjz_work_cmdb/static/tkbl/css/style.css?v=2.2.0" rel="stylesheet">
+
+    <link rel="stylesheet" href="/zjz_work_cmdb/static/tkbl/select2/select2.css" >
+    <link rel="stylesheet" href="/zjz_work_cmdb/static/tkbl/select2/select2-bootstrap.css">
+    <script src="/zjz_work_cmdb/static/tkbl/select2/select2.min.js"></script>
+   
+   
+   
+
+{{end}}
+
+{{define "content"}}
+
+<!--<link href="/zjz_work_cmdb/static/assets/select2-3.5.2/select2.css" rel="stylesheet">-->
+<style>
+    td{position: relative;}
+    .copy-btn{position: absolute;top: 13px;right: 8px;visibility: hidden;z-index: 8888;}
+    td:hover .copy-btn,.copy-btn.hover{display:inline;visibility: visible;}
+</style>
+
+	<div class="content-wrapper">
+        <section class="content-header">
+        <h1>策略模版</h1>
+                <a id="newfalcontpl" class="btn btn-success" href="/zjz_work_cmdb/cmdb/falconnewtpl" style="position:absolute;right:20px;top:20px;"><span class="fa fa-plus pr10"></span>新增策略模版
+
+                </a>
+        <br>
+         </section>
+                               <div class="ibox-content">
+
+
+                                <table class="table table-striped table-bordered table-hover dataTables-example">
+                                   
+                                    <thead>
+                                        <tr>
+                                            <th>策略模版名称</th>
+                                            <th>配置策略数目</th>
+                                            <th>策略列表</th>
+                                            <!--<th>监控设备组</th>-->
+                                            <th>告警对象组</th>
+                                            <th>告警对象设置</th>
+                                            <th>创建者</th>
+        
+                                            <th>父模版</th>
+                                            <th>父模版关联</th>
+                                            <!--<th>克隆模版</th>-->
+                                            <!--<th>模版名称编辑</th>-->
+                                            <th>删除</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {{range $index, $elem := .falcontpls}}
+
+                    <tr>
+                        <td><div class="tpl_name" title="ddtplname">{{$elem.Tpl_name}}</div>
+                        	<input type="hidden" class="Id" value="{{$elem.Id}}">
+                            <input type="hidden" class="Tplname" value="{{$elem.Tpl_name}}">
+                        </td>
+
+                         <td> <div class="cnt" title="ddcnt">{{$elem.Id | idstrategycnt}}</div>
+                        </td>
+
+
+
+                        <td style="text-align: center;" role="gridcell">
+                            <a name="add" class="btn btn-success  btn-sm falcontpl-add" >设置</a>
+                        </td>
+                        
+                        <!--
+                        <td style="text-align: center;" role="gridcell">
+                            <a name="tpl-bind" class="btn btn-success  btn-sm falcontpl-bind" >绑定</a>
+                        </td>
+                    -->
+                        
+                        
+
+                        <td><div class="action_id" title="ddactionid">
+                         {{range $index1, $elem1 := $.falconactions}}
+                            {{if eq $elem1.Id $elem.Action_id}} {{$elem1.Uic}}{{end}}
+                            {{end}}
+                        </div>
+                            <input type="hidden" class="Actionid" value="{{$elem.Action_id}}">
+                        </td>
+
+                        <td style="text-align: center;" role="gridcell">
+                            <a name="warm" class="btn btn-success  btn-sm falcontpl-warm" >设置</a>
+                        </td> 
+                       
+
+                        <td><div class="create_user" title="ddcreateuser">{{$elem.Create_user}}</div>
+                            <input type="hidden" class="Createuser" value="{{$elem.Create_user}}">
+                        </td>
+
+                        
+                        <td><div class="parent_id" title="ddparentid">
+                            {{range $index1, $elem1 := $.falcontpls}}
+                            {{if eq $elem1.Id $elem.Parent_id}} {{$elem1.Tpl_name }}{{end}}
+                            {{end}}
+                            </div>
+                            <input type="hidden" class="Parentid" value="{{$elem.Parent_id}}">
+                        </td>
+
+                        <td style="text-align: center;" role="gridcell">
+                            <a name="tpl-relation" class="btn btn-success  btn-sm falcontpl-relation" >关联</a>
+                        </td>
+
+                        <!--
+                        <td style="text-align: center;" role="gridcell">
+                            <a name="tpl-clone" class="btn btn-success  btn-sm falcontpl-clone" >克隆</a>
+                        </td>
+                        -->
+
+                        <!--
+                        <td style="text-align: center;" role="gridcell">
+                            <a name="tpl-edit" class="btn btn-success  btn-sm falcontpl-edit" >编辑</a>
+                        </td>
+                    -->
+
+                        <td style="text-align: center;" role="gridcell">
+                        	<a name="tpl-delete" class="btn btn-success  btn-sm falcontpl-delete" >删除</a>
+                        </td>
+                        
+                        
+                                          
+                        
+                   </tr>
+                    {{end}}
+                
+                                      </tbody>
+                                    </table>
+                           </div>
+
+
+
+<div class="row">
+<div class="col-xs-12" id="update"></div>
+</div>
+
+<div class="row">
+<div class="col-xs-12" id="update_bind"></div>
+</div>
+
+
+<input type="hidden" id="current_sid">
+<input type="hidden" id="tpl_id">
+    <a name="add"></a>
+    <div class="panel panel-success" id="add_div" style="display: none;">
+        <div class="panel-heading">策略添加/修改</div>
+        <div class="panel-body">
+            <div class="form-inline mt10" role="form">
+                <div class="form-group">
+                    metric:
+                </div>
+                <div class="form-group">
+                    <input type="text" style="width: 300px;" class="form-control" id="metric" data-toggle="tooltip" data-placement="top" title="监控项名，如：df.bytes.free.percent">
+                </div>
+                <div class="form-group">
+                    tags: <input type="text" class="form-control" id="tags" data-toggle="tooltip" data-placement="top" title="维度tag，如：fstype=ext4,mount=/mnt">
+                    Max: <input class="form-control" id="max_step" style="width: 100px;" value="3" data-toggle="tooltip" data-placement="top" title="持续故障情况下，连续报警次数">
+                    P: <input class="form-control" id="priority" style="width: 60px;" value="0" data-toggle="tooltip" data-placement="top" title="故障等级，填写1~5的数字">
+                    note: <input class="form-control" id="note" data-toggle="tooltip" data-placement="top" title="报警描述，如：mnt分区block使用率超过80%">
+                </div>
+            </div>
+
+            <div class="form-inline mt10" role="form">
+                <div class="form-group">
+                    if <input type="text" value="all(#3)" class="form-control" id="func" style="width: 100px;" data-toggle="tooltip" data-placement="top" title="判断方法，如：all(#3)">
+                    <select class="form-control" id="op">
+                        <option value="==">==</option>
+                        <option value="!=">!=</option>
+                        <option value="<">&lt;</option>
+                        <option value="<=">&lt;=</option>
+                        <option value=">">&gt;</option>
+                        <option value=">=">&gt;=</option>
+                    </select>
+                    <input type="text" value="0" class="form-control" id="right_value" style="width: 100px;"  data-toggle="tooltip" data-placement="top" title="报警阈值">
+                    : alarm(); callback();
+                </div>
+            </div>
+
+            <div class="form-inline mt10" role="form">
+                <div class="form-group">
+                    run begin: <input type="text" class="form-control" id="run_begin" data-toggle="tooltip" data-placement="top" title="生效开始时间，如：07:30">
+                    run end: <input type="text" class="form-control" id="run_end" data-toggle="tooltip" data-placement="top" title="生效结束时间，如：23:30">
+                    (生效时间，不指定就是全天生效)
+                </div>
+            </div>
+
+            <button class="btn btn-default" onclick="add_strategy();">
+                <span class="glyphicon glyphicon-floppy-disk"></span>
+                Save
+            </button>
+
+        </div>
+    </div>
+
+<!--
+    <div class="panel panel-default" >
+        <div class="panel-heading">该模板中的策略列表</div>
+        <div class="panel-body">
+            <div class="pull-right">
+                <a class="btn btn-default" href="javascript:goto_strategy_add_div();">
+                    <span class="glyphicon glyphicon-plus"></span>
+                </a>
+            </div>
+            <div style="line-height: 35px;">
+                max: 最大报警次数 P：报警级别（&lt;3: 既发短信也发邮件 &gt;=3: 只发邮件） run：生效时间，不指定就是全天生效
+            </div>
+        </div>
+        <table class="table table-hover table-bordered table-striped" style="margin-bottom: 0px;">
+            <thead>
+            <tr>
+                <th><u>metric</u>/<span class="blue">tags</span><span class="gray">[note]</span></th>
+                <th>condition</th>
+                <th>max</th>
+                <th>P</th>
+                <th>run</th>
+                <th>operation</th>
+            </tr>
+            </thead>
+          </table>
+    </div>
+-->
+
+
+
+<div id="bindparent_tpl_div"  style="display: none;" class="form-inline mb20" role="form">
+<div class="form-group">          
+<select id="parent_tpl_id"  style="width: 400px;" class="form-control">
+{{range $index, $elem := .falcontpls}}
+<option value={{$elem.Id}}>{{$elem.Tpl_name}}</option>
+{{end}}
+</select>
+</div>
+<div class="form-group">
+<button type="button" onclick="bind_parent_tpl(1);" class="btn btn-default">
+<span class="glyphicon glyphicon-plus"></span>关联父模版</button>
+<button type="button" onclick="history.go(-1);" class="btn btn-default">
+<span class="glyphicon glyphicon-arrow-left"></span>Back</button>
+</div>
+</div>
+
+
+<script>
+$("#parent_tpl_id").select2({
+    });
+</script>
+
+
+
+    <div id="uic_update" class="panel panel-warning" style="display: none;">
+        <input type="hidden" id="action_id">
+        <div class="panel-heading">模板报警配置，对模板中的所有策略生效</div>
+        <div class="panel-body">
+
+            <div class="panel panel-default">
+                <div class="panel-heading">def alarm(): #配置了UIC组才会发报警</div>
+                <div class="panel-body">
+                    当前接收组为:<div id="uic_team"></div>
+                    报警接收组重新设置：
+                    <select id="uic"  style="width: 400px;" class="form-control">
+                    {{range $index, $elem := .falconuics}}
+                        <option value={{$elem.Name}}>{{$elem.Name}}</option>
+                    {{end}}
+                        <option value="" selected ></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">def callback(): #高级用法，配置了callback地址才会触发回调</div>
+                <div class="panel-body">
+                    callback地址（只支持http get方式回调）：
+                    <input class="form-control" id="callback_url" value="">
+
+                    <div class="mt10">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="before_callback_sms">
+                                   <!--{% if data.tpl.action.before_callback_sms == 1 %}checked="checked"{% endif %}>--> 
+                                   回调之前发提醒短信
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="before_callback_mail" >
+                                    回调之前发提醒邮件
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="after_callback_sms" >
+                                   回调之后发结果短信
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="after_callback_mail" >
+                                  回调之后发结果邮件
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-default" onclick="save_action_for_tpl(1);">
+                <span class="glyphicon glyphicon-floppy-disk"></span>
+                Save
+            </button>
+        </div>
+    </div>
+
+<script>
+    $("#uic").select2({
+    });
+</script>
+
+
+
+
+</div>
+
+<!-- Mainly scripts -->
+    <script src="/zjz_work_cmdb/static/js/falcon.js"></script>
+   
+<!--<script src="/zjz_work_cmdb/static/assets/kendoui-2015.2.624/js/kendo.web.min.js"></script>-->
+<!--<script src="/zjz_work_cmdb/static/assets/select2-3.5.2/select2.js"></script>-->
+<script src="/zjz_work_cmdb/static/assets/intro/intro.js?version={{.today}}"></script>
+<script src="/zjz_work_cmdb/static/assets/jquery.zeroclipboard/jquery.zeroclipboard.min.js"></script>
+ 
+    <script src="/zjz_work_cmdb/static/tkbl/js/jquery-2.1.1.min.js"></script>
+    <script src="/zjz_work_cmdb/static/tkbl/js/bootstrap.min.js?v=3.4.0"></script>
+     
+    <!--
+
+    <script src="/zjz_work_cmdb/static/tkbl/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+    <script src="/zjz_work_cmdb/static/tkbl/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+    
+    <script src="/zjz_work_cmdb/static/tkbl/js/plugins/jeditable/jquery.jeditable.js"></script>
+    -->
+
+    <!-- Data Tables -->
+    <script src="/zjz_work_cmdb/static/tkbl/js/plugins/dataTables/jquery.dataTables.js"></script>
+    <script src="/zjz_work_cmdb/static/tkbl/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+
+    <!-- Custom and plugin javascript -->
+    <!-- <script src="/zjz_work_cmdb/static/tkbl/js/hplus.js?v=2.2.0"></script>-->
+    
+    <!--<script src="/zjz_work_cmdb/static/tkbl/js/plugins/pace/pace.min.js"></script>-->
+
+    <!-- Page-Level Scripts -->
+    <script src="/zjz_work_cmdb/static/js/common.js?version={{.today}}"></script>
+ 
+    <script>
+        $(document).ready(function () {
+            $('.dataTables-example').dataTable();
+            
+        });
+
+        function save_action_for_tpl(hid) {
+            var action_id = $.trim($("#action_id").val());
+            var tpl_id = $.trim($("#tpl_id").val());
+            var uic = $.trim($("#uic").val());
+            var callback_url = $.trim($("#callback_url").val());
+            var after_callback_mail = $.trim($("#after_callback_mail").is(":checked"));
+            var after_callback_sms = $.trim($("#after_callback_sms").is(":checked"));
+            var before_callback_mail = $.trim($("#before_callback_mail").is(":checked"));
+            var before_callback_sms = $.trim($("#before_callback_sms").is(":checked"));
+            
+            if (callback_url=="") {
+                var callback =0
+            } else {
+                callback=1
+            }
+
+            if (after_callback_mail=="false") {
+                after_callback_mail_num=0
+            } else {
+                after_callback_mail_num=1
+            }
+            if (after_callback_sms=="false") {
+                after_callback_sms_num=0
+            } else {
+                after_callback_sms_num=1
+            }
+            if (before_callback_mail=="false") {
+                before_callback_mail_num=0
+            } else {
+                before_callback_mail_num=1
+            }
+            if (before_callback_sms=="false") {
+                before_callback_sms_num=0
+            } else {
+                before_callback_sms_num=1
+            }
+
+            $.post('/zjz_work_cmdb/cmdb/falconactionmodify', {
+                //'sid': sid,
+                'action_id': action_id,
+                'tpl_id':tpl_id,
+                'uic': uic,
+                'callback_url': callback_url,
+                'callback': callback,
+                'after_callback_mail': after_callback_mail_num,
+                'after_callback_sms': after_callback_sms_num,
+                'before_callback_mail': before_callback_mail_num,
+                'before_callback_sms': before_callback_sms_num
+            }, function (result) {
+                console.log(result)
+                rere = result;
+                if(rere.success == false)
+                {
+                            showWindows(rere.errInfo,'notice');
+                            return;
+                }
+                else
+                {
+                            showWindows("告警对象设置成功！",'success');
+                            setTimeout(function(){window.location.reload();},1000);
+                            return;
+                }
+            })
+
+        }
+
+        function bind_parent_tpl(hid) {
+            var tpl_id = $.trim($("#tpl_id").val());
+            var parent_tpl_id = $.trim($("#parent_tpl_id").val());
+            console.log(tpl_id);
+            console.log(parent_tpl_id);
+            $.post('/zjz_work_cmdb/cmdb/falconparenttpl', {
+                
+                'tpl_id': $.trim($("#tpl_id").val()),
+                'parent_tpl_id': $.trim($("#parent_tpl_id").val())
+
+            }, function (result) {
+                console.log(result)
+                rere = result;
+                if(rere.success == false)
+                {
+                            showWindows(rere.errInfo,'notice');
+                            return;
+                }
+                else
+                {
+                            showWindows("绑定成功！",'success');
+                            setTimeout(function(){window.location.reload();},1000);
+                            return;
+                }
+            })
+        
+        }
+        
+          function goto_strategy_add_div() {
+             $("#metric").val('');
+             $("#tags").val('');
+             $("#max_step").val('3');
+             $("#priority").val('0');
+             $("#note").val('');
+             $("#func").val('all(#3)');
+             $("#op").val('==');
+             $("#right_value").val('0');
+             $("#run_begin").val('');
+             $("#run_end").val('');
+             $("#add_div").show('fast');
+             $("#current_sid").val('0');
+            //location.href = "#add";
+        }
+
+        function add_strategy() {
+             var sid = $("#current_sid").val();
+            $.post('/zjz_work_cmdb/cmdb/falconaddstrategy', {
+                'sid': sid,
+                'metric': $.trim($("#metric").val()),
+                'tags': $.trim($("#tags").val()),
+                'max_step': $.trim($("#max_step").val()),
+                'priority': $.trim($("#priority").val()),
+                'note': $.trim($("#note").val()),
+                'func': $.trim($("#func").val()),
+                'op': $.trim($("#op").val()),
+                'right_value': $.trim($("#right_value").val()),
+                'run_begin': $.trim($("#run_begin").val()),
+                'run_end': $.trim($("#run_end").val()),
+                'tpl_id': $.trim($("#tpl_id").val())
+            }, function (result) {
+                console.log(result)
+                rere = result;
+                if(rere.success == false)
+                {
+                            showWindows(rere.errInfo,'notice');
+                            return;
+                }
+                else
+                {
+
+                           
+
+                            $("#add_div").hide('fast');
+                            var Id = $.trim($("#tpl_id").val());
+                           // showWindows("增加成功！",'success');
+                           $.ajax({
+                                url : '/zjz_work_cmdb/cmdb/falconshowstrategy',
+                                method : 'post',
+                                data: {Id:Id},
+                                success : function(response){
+                                    console.log(response)
+                                    var output =  '<div class="panel panel-default" >';
+                                    output += '<div class="panel-heading">该模板中的策略列表</div>';
+                                    output += '<div class="panel-body">';
+                                    output += '<div class="pull-right">';
+                                    output += '<a class="btn btn-default" href="javascript:goto_strategy_add_div();">';
+                                    output += '<span class="glyphicon glyphicon-plus"></span></a>';
+                                    output += '</div>';
+                                    output += '<div style="line-height: 35px;">';
+                                    output += 'max: 最大报警次数 P：报警级别（&lt;3: 既发短信也发邮件 &gt;=3: 只发邮件） run：生效时间，不指定就是全天生效';
+                                    output += '</div></div>'
+               
+            
+                                    output += '<table class="table table-hover table-bordered table-striped" style="margin-bottom: 0px;">';
+                                    output += '<thead>';
+                                    output += '<tr>';
+                                    output += '<th><u>metric</u>/<span class="blue">tags</span><span class="gray">[note]</span></th>';
+                                    output += '<th>condition</th>';
+                                    output += '<th>max</th>';
+                                    output += '<th>P</th>';
+                                    output += '<th>run</th>';
+                                    output += '<th>修改</th>';
+                                    output += '<th>删除</th>';
+                                    output += '</tr>';
+                                    output += '</thead>';
+                     
+                     
+                                    if(response.data==null) {
+                                            console.log(response.data)
+                        
+                                    } else {
+                                        for (var i = 0; i < response.data.length; i ++ ) {
+                                    output += '<tbody>';
+                                    output += '<tr>';
+                                    output += '<td>';
+                                    output += '<div class="mtn" title="dd_mtn">'+response.data[i].Metric+"/"+response.data[i].Tags+"["+response.data[i].Note+"]"+'</div>'
+                                    output += '</td>';
+                                    output += '<td>';
+                                    output += '<div class="condition" title="dd_condition">'+response.data[i].Func+response.data[i].Op+response.data[i].Right_vaue+'</div>'
+                                    output += '<input type="hidden" class="i_Func" value="'+response.data[i].Func+'">'
+                                    output += '<input type="hidden" class="i_Op" value="'+response.data[i].Op+'">'
+                                    output += '<input type="hidden" class="i_Right_vaue" value="'+response.data[i].Right_vaue+'">'
+                                    output += '</td>';
+                                    output += '<td>';
+                                    output += '<div class="max" title="dd_max">'+response.data[i].Max_step+'</div>'
+                                    output += '</td>';
+                                    output += '<td>';
+                                    output += '<div class="P" title="dd_P">'+response.data[i].Priority+'</div>'
+                                    output += '<input type="hidden" class="i_P" value="'+response.data[i].Priority+'">'
+                                    output += '</td>';
+                                    output += '<td>';
+                                    output += '<div class="run" title="dd_run">'+response.data[i].Run_begin+"-"+response.data[i].Run_end+'</div>'
+                                    output += '</td>';
+
+                                    
+                                    output += '<td style="text-align: center;" role="gridcell">'
+                                    output += '<button type="button" onclick="falconstrategy_update('+response.data[i].Id+',\''+response.data[i].Metric+'\',\''+response.data[i].Tags+'\',\''+response.data[i].Note+'\',\''+response.data[i].Func+'\',\''+response.data[i].Op+'\',\''+response.data[i].Right_vaue+'\','+response.data[i].Max_step+','+response.data[i].Priority+',\''+response.data[i].Run_begin+'\',\''+response.data[i].Run_end+'\');" class="btn btn-success">修改策略</button>'
+                                    output += '</td>'
+
+                                    output += '<td style="text-align: center;" role="gridcell">'
+                                    output += '<button type="button" onclick="falconstrategy_del('+response.data[i].Id+');" class="btn btn-success">删除策略</button>'
+                                    output += '</td>'
+
+                                    //output += '<td>';
+                                    //output += '<div class="operation" title="dd_operation">'+"operation"+'</div>'
+                                    //output += '</td>';
+                                    output += '</tr>';
+                                    output += '</tbody>';
+                                        }
+                                    }
+                      
+                                    output += '</table>';
+                                    output += '</div>';
+                                    $('#update').html(output);
+                               }
+                            
+                            });
+
+                            return;
+                }
+            })
+        }
+       
+
+    function falconstrategy_del(hid) {
+            var Id = hid 
+            //alert(Id)
+            $.post('/zjz_work_cmdb/cmdb/falcondelstrategy', {
+                //'sid': sid,
+                'Id': Id
+            }, function (result) {
+                console.log(result)
+                rere = result;
+                if(rere.success == false)
+                {
+                            showWindows(rere.errInfo,'notice');
+                            return;
+                }
+                else
+                {
+                            showWindows("删除成功！",'success');
+                            setTimeout(function(){window.location.reload();},1000);
+                            return;
+                }
+            })
+    }
+
+
+
+    function falconstrategy_update(hid,hmetric,htags,hnote,hfunc,hop,hright_value,hmax_step,hpriority,hrun_begin,hrun_end) {
+        var sid = hid
+        $("#current_sid").val(sid);
+        $("#add_div").show('fast');
+        $("#metric").val(hmetric);
+        $("#tags").val(htags);
+        $("#max_step").val(hmax_step);
+        $("#priority").val(hpriority);
+        $("#note").val(hnote);
+        $("#func").val(hfunc);
+        $("#op").val(hop);
+        $("#right_value").val(hright_value);
+        $("#run_begin").val(hrun_begin);
+        $("#run_end").val(hrun_end);
+        /*
+        $.post('/zjz_work_cmdb/cmdb/falconupdatestrategy', {
+                'sid': sid,
+                'metric': $.trim($("#metric").val()),
+                'tags': $.trim($("#tags").val()),
+                'max_step': $.trim($("#max_step").val()),
+                'priority': $.trim($("#priority").val()),
+                'note': $.trim($("#note").val()),
+                'func': $.trim($("#func").val()),
+                'op': $.trim($("#op").val()),
+                'right_value': $.trim($("#right_value").val()),
+                'run_begin': $.trim($("#run_begin").val()),
+                'run_end': $.trim($("#run_end").val()),
+                'tpl_id': $.trim($("#tpl_id").val())
+            }, function (result) {
+                console.log(result)
+                //rere = result;
+            })
+*/
+
+}
+
+
+
+
+    function showWindows(Msg,level)
+    {
+    if(level=='success')
+    {
+        var d = dialog({
+            width: 150,
+            content: '<div class="c-dialogdiv2"><i class="c-dialogimg-success"></i>'+Msg+'</div>'
+        });
+        d.show();
+    }
+    else if(level =='error')
+    {
+        var d = dialog({
+            title:'错误',
+            width:300,
+            okValue:"确定",
+            ok:function(){},
+            content: '<div class="c-dialogdiv2"><i class="c-dialogimg-failure"></i>'+Msg+'</div>'
+        });
+        d.showModal();
+    }
+    else
+    {
+        var d = dialog({
+            title:'警告',
+            width:300,
+            okValue:"确定",
+            ok:function(){},
+            content: '<div class="c-dialogdiv2"><i class="c-dialogimg-prompt"></i>'+Msg+'</div>'
+        });
+        d.showModal();
+    }
+    }
+    
+
+
+    </script>
+
+{{end}}
