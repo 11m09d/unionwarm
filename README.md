@@ -18,11 +18,21 @@ Unionwarm 是openfalcon中的Portal的Go版本，目前大的功能欠缺express
 
 ![告警组](https://github.com/chenqi123/unionwarm/blob/master/png/3.png?raw=true =600x250)
 
-### 2. 待办事宜 [Todo 列表]
+### 2. 安装
+* mkdir /unionwarm 
+* export GOPATH=/unionwarm/
+* go get -t -u -v github.com/chenqi123/unionwarm
+* 修改github.com/astaxie/beego/orm/orm.go 的 DefaultRowsLimit = 1000 为 DefaultRowsLimit = 10000
+* cd ./src/github.com/chenqi123/unionwarm 后go build
+* mv conf/app.conf.example conf/app.conf 修改mysql数据库的用户名和密码
+* 运行
+
+
+### 3. 待办事宜 
 * 删除告警组时，集群自定义监控没有删除
 * open-falcon 中的HBS 当策略组和主机都成倍增加的时候，策略输出可能是个问题，目前所有的judge 拿到一份相同的总体策略，当策略1000*主机1000就是100万的Map,量太大(不知道是不是我的理解有误)
 
-### 3. Restful接口介绍
+### 4. Restful接口介绍
 |序号 | 内容                                    | 作用   |  输入  | 输出 |
 |--------|:-----|:--------|:--------|:--------|
 |01  | /                                             | 首页        |    | |
