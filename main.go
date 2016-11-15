@@ -1,10 +1,10 @@
 package main
 
 import (
-	_ "unionwarm/routers"
+	_ "github.com/chenqi123/unionwarm/routers"
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego"
-	"unionwarm/models"
+	"github.com/chenqi123/unionwarm/models"
 	"fmt"
 )
 

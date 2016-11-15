@@ -1,7 +1,7 @@
 package routers
 
 import (
-	"unionwarm/controllers"
+	"github.com/chenqi123/unionwarm/controllers"
 	"github.com/astaxie/beego"
 )
 

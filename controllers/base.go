@@ -9,7 +9,7 @@ import (
 
 	"github.com/astaxie/beego"
 
-	"unionwarm/models"
+	"github.com/chenqi123/unionwarm/models"
 	//"github.com/shwinpiocess/cc/utils"
 	"github.com/astaxie/beego/httplib"
 )

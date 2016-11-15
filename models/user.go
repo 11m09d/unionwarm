@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/astaxie/beego/httplib"
-	"unionwarm/g"
+	"github.com/chenqi123/unionwarm/g"
 	"time"
 	"github.com/astaxie/beego"
 )

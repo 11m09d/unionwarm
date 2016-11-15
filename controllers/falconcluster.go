@@ -8,7 +8,7 @@ import (
 	//"fmt"
 
 	//"github.com/astaxie/beego"
-	"unionwarm/models"
+	"github.com/chenqi123/unionwarm/models"
 
 
 )
