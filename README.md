@@ -4,8 +4,25 @@
 Unionwarm 是openfalcon中的Portal的Go版本，目前大的功能欠缺expressions和nodata 其它基本完成。
 其中部分API的方式自行改写适用于目前的场景
 
-### 1. 待办事宜 [Todo 列表]
-### 2. Restful接口介绍
+### 1. 内容介绍
+
+#### 新增策略模版、模版包含多种策略，可以设置告警对象组（UIC）; 可以关联父模版; 使用统一UIC登陆，创建者为UIC用户
+
+![告警模版](https://github.com/chenqi123/unionwarm/blob/master/png/1.png?raw=true =600x250)
+
+#### 新增监控组,能够自动/手动添加监控设备，关联策略模版
+
+![告警组](https://github.com/chenqi123/unionwarm/blob/master/png/2.png?raw=true =600x250)
+
+#### 新增自定义监控，绑定监控组，设置集群算法，重新生成新监控指标回送统一采集
+
+![告警组](https://github.com/chenqi123/unionwarm/blob/master/png/3.png?raw=true =600x250)
+
+### 2. 待办事宜 [Todo 列表]
+[TAB][TAB]删除告警组时，集群自定义监控没有删除
+[TAB][TAB]open-falcon 中的HBS 当策略组和主机都成倍增加的时候，策略输出可能是个问题，目前所有的judge 拿到一份相同的总体策略，当策略1000*主机1000就是100万的Map,量太大(不知道是不是我的理解有误)
+
+### 3. Restful接口介绍
 |序号 | 内容                                    | 作用   |  输入  | 输出 |
 |--------|:-----|:--------|:--------|:--------|
 |01  | /                                             | 首页        |    | |
