@@ -159,3 +159,11 @@ func ExistFalconclusterByName(endpoint,metric,tags string) bool {
 	return o.QueryTable("cluster").Filter("Endpoint", endpoint).Filter("Metric", metric).Filter("Tags", tags).Exist()
 }
 
+
+func GetClusterCount(id int) (cnt int64, err error) {
+	o := orm.NewOrm()
+	o.Using("falcon_portal")
+	
+	cnt, err = o.QueryTable("cluster").Filter("Grp_id", id).Count()
+	return
+}

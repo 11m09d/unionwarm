@@ -175,14 +175,28 @@ func (this *FalconGphostController) AddGroup() {
 func (this *FalconGphostController) DelGroup() {
 	out := make(map[string]interface{})
 	Id, _ := this.GetInt("Id")
-	if err := models.DelGroup(Id); err == nil {
-		out["success"] = true
-		this.jsonResult(out)
+	if cnt, err := models.GetClusterCount(Id); err == nil {
+		if cnt==0 {
+			if err1 := models.DelGroup(Id); err1 == nil {
+				out["success"] = true
+				this.jsonResult(out)
+			} else {
+				out["success"] = false
+				out["errInfo"] = err.Error()
+				this.jsonResult(out)
+			}
+		} else {
+			out["success"] = false
+			out["errInfo"] = "请先清理自定义集群监控"
+			this.jsonResult(out)
+		}
+		
 	} else {
 		out["success"] = false
 		out["errInfo"] = err.Error()
 		this.jsonResult(out)
 	}
+	
 }
 
 
